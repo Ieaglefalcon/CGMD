@@ -1,0 +1,41 @@
+# energy minimization for particulate system
+
+units lj
+atom_style molecular
+neighbor 0.0 bin
+neigh_modify delay 0 check no one 50000 page 500000
+communicate single vel yes
+#read_data coord.1per
+read_restart restart.sol.try.20000
+
+group medium type 1
+group COM type 3
+group NP type 2 type 3
+neigh_modify exclude molecule NP
+
+fix 1 NP rigid molecule
+fix 2 medium nve
+
+compute stream medium temp/deform
+compute allCorrected all temp/deform
+
+
+
+#pair_style hybrid/overlay lj/cut 2.5 dpd/tstat 1.0 1.0 2.5 482789 
+#pair_coeff 1 1 lj/cut 1.0 1.0 2.5 
+#pair_coeff 1 2*3 lj/cut 1.0 1.0  
+#pair_coeff 2*3 2*3 lj/cut 1.0 1.0 1.12246
+#pair_coeff * * dpd/tstat 1.0
+
+#pair_style soft 2.5
+#pair_coeff * * 10.0
+
+minimize 1e-6 1.0e-6 100000 100000
+
+thermo 500
+thermo_style custom step temp etotal pe ke press vol c_stream c_allCorrected
+
+restart 5000 restart.hard
+
+timestep 0.005
+run	20000

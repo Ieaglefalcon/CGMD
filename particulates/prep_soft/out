@@ -1,0 +1,3 @@
+LAMMPS (11 Mar 2013)
+Scanning data file ...
+ERROR on proc 0: Cannot open file coord.1per (read_data.cpp:1576)

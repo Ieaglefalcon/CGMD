@@ -1,0 +1,17 @@
+Summary on Solvent system:
+
+A. Diffusivity:
+
+	Performed equilibrium simulation on a N=4000 system, at density ~0.75
+	DPD/tstat 1.0, friction coefficient 1.0
+	Calcualted based on Matlab scripts
+	Reasonable value based on Stokes-Einstein estimation.
+
+B. Viscosity:
+	Performed non-equilibrium simulations on the same system from the last state of the equilibrium system
+	Shear rate ranges from 25e-4 ~ 0.25 ( too fast to be under temp control)
+	Viscosity vs. shear rate data looks noisy -- confused on the reason
+
+****** Key issue to discuss *******
+
+1. Why viscosity data noisy and how to fi?

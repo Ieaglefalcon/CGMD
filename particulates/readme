@@ -1,0 +1,14 @@
+Summary on progress of prepraring particulates system:
+
+1%, 10% are the target systems to start with.
+
+1. Particles based on the desired volume fraction is added to the original solvent system, box volume expanded accordingly.
+
+2. Created coordinate file with highly overlapped particles, see matlab script in the folder
+
+3. Use energy_minimization command attempting to reach equilibrium, but it doesn't appear to work as expected.
+
+
+*** Key issue to discuss ***
+
+1. How to equalize the system using energy minimization

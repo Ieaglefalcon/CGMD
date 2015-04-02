@@ -1,0 +1,57 @@
+# prep stage: T = 10.0 erate = 0.005 run ofor 1,000,000 steps at a timestep = 0.005; Then switch to T = 0.5,erate = 0.005 run for another 1,000,000 steps
+
+variable timestep equal 0.005
+variable shearrate equal 0.0005
+variable totalrun equal 20000000
+variable mythermo equal 200000
+variable freq equal 200000
+variable dumpfreq equal 200000
+variable temp equal 1.0
+
+units		lj
+atom_style	molecular
+neighbor	0.0 bin
+neigh_modify delay 0 check no every 1 one 50000 page 500000
+communicate single vel yes
+
+read_restart restart.sol.try.1000001
+change_box all triclinic
+
+### FIXES: INTEGRATOR AND DEFORMATION ###
+fix 1 all nve
+fix shear all deform 1 xy erate ${shearrate} remap v
+
+### COMPUTE TEMPERATURE AND STRESS ###
+compute myTemp all temp
+compute allstream all temp/deform
+compute noX all temp/partial 0 1 1
+
+compute myTempStress all pressure myTemp
+compute myallstress all pressure allstream
+compute noXstress all pressure noX
+### POTENTIAL SETUP ###
+pair_style	hybrid/overlay lj/cut 2.5 dpd/tstat 1.0 1.0 2.5 587495
+pair_modify shift yes 
+pair_coeff  * * lj/cut 1.0 1.0
+pair_coeff  * * dpd/tstat 1.0 2.5
+
+### compute RDF and output RDF ### 
+compute  rdf1 all rdf 100 1 1
+fix	output21 all ave/time 1 10000 10000 c_rdf1 file solvent mode vector
+
+### OUTPUT VELOCITY AND DENSITY PROFILE ###
+
+fix	o1 all ave/spatial 1 ${freq} ${freq} y lower 0.125 vx vy vz density/number ave running units reduced file equili.medium.space
+
+### OUTPUT PRESSURE TENSOR###
+fix	p1 all ave/time 1 ${freq} ${freq} c_myTemp c_myTempStress[1] c_myTempStress[2] c_myTempStress[3] c_myTempStress[4] c_myTempStress[5] c_myTempStress[6] ave running file myTempStress
+fix	p2 all ave/time 1 ${freq} ${freq} c_allstream c_myallstress[1] c_myallstress[2] c_myallstress[3] c_myallstress[4] c_myallstress[5] c_myallstress[6] ave running file myallstress
+fix	p3 all ave/time 1 ${freq} ${freq} c_noX c_noXstress[1] c_noXstress[2] c_noXstress[3] c_noXstress[4] c_noXstress[5] c_noXstress[6] ave running file noXstress
+
+thermo ${mythermo}
+thermo_style custom step temp c_myTemp c_allstream c_noX etotal pe ke press vol pxx pyy pzz pxy pxz pyz 
+timestep ${timestep}
+dump 1 all custom ${dumpfreq} prep.unwrap.dump id type xu yu zu
+dump 2 all custom ${dumpfreq} prep.wrap.dump id type x y z
+run ${totalrun}
+

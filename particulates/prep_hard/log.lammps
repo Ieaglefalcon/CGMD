@@ -1,0 +1,157 @@
+LAMMPS (11 Mar 2013)
+# energy minimization for particulate system
+
+units lj
+atom_style molecular
+neighbor 0.0 bin
+neigh_modify delay 0 check no one 50000 page 500000
+communicate single vel yes
+#read_data coord.1per
+read_restart restart.sol.try.20000
+  orthogonal box = (0 0 0) to (17.534 17.534 17.534)
+  1 by 1 by 1 MPI processor grid
+  4125 atoms
+  0 = max # of 1-2 neighbors
+  0 = max # of 1-3 neighbors
+  0 = max # of 1-4 neighbors
+  1 = max # of special neighbors
+
+group medium type 1
+4000 atoms in group medium
+group COM type 3
+25 atoms in group COM
+group NP type 2 type 3
+125 atoms in group NP
+neigh_modify exclude molecule NP
+
+fix 1 NP rigid molecule
+25 rigid bodies with 125 atoms
+fix 2 medium nve
+
+compute stream medium temp/deform
+compute allCorrected all temp/deform
+
+
+
+#pair_style hybrid/overlay lj/cut 2.5 dpd/tstat 1.0 1.0 2.5 482789
+#pair_coeff 1 1 lj/cut 1.0 1.0 2.5
+#pair_coeff 1 2*3 lj/cut 1.0 1.0
+#pair_coeff 2*3 2*3 lj/cut 1.0 1.0 1.12246
+#pair_coeff * * dpd/tstat 1.0
+
+#pair_style soft 2.5
+#pair_coeff * * 10.0
+
+minimize 1e-6 1.0e-6 100000 100000
+WARNING: Resetting reneighboring criteria during minimization (min.cpp:173)
+WARNING: Using compute temp/deform with no fix deform defined (compute_temp_deform.cpp:81)
+WARNING: Using compute temp/deform with no fix deform defined (compute_temp_deform.cpp:81)
+Memory usage per processor = 7.80188 Mbytes
+Step Temp E_pair E_mol TotEng Press 
+   20000     4.565309    220.99746            0    227.70542    198.43491 
+   20049     4.565309    211.10088            0    217.80884    195.63389 
+Loop time of 3.43363 on 1 procs for 49 steps with 4125 atoms
+
+Minimization stats:
+  Stopping criterion = energy tolerance
+  Energy initial, next-to-last, final = 
+         220.997457199      211.101065261      211.100879449
+  Force two-norm initial, final = 5377.38 25.9094
+  Force max component initial, final = 208.194 2.62852
+  Final line search alpha, max atom move = 0.00159932 0.00420384
+  Iterations, force evaluations = 49 81
+
+Pair  time (%) = 2.69492 (78.486)
+Bond  time (%) = 2.90871e-05 (0.000847122)
+Neigh time (%) = 0.676852 (19.7124)
+Comm  time (%) = 0.0323787 (0.942986)
+Outpt time (%) = 0 (0)
+Other time (%) = 0.0294521 (0.857753)
+
+Nlocal:    4125 ave 4125 max 4125 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    4699 ave 4699 max 4699 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    165411 ave 165411 max 165411 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 165411
+Ave neighs/atom = 40.0996
+Ave special neighs/atom = 0
+Neighbor list builds = 81
+Dangerous builds = 81
+
+thermo 500
+thermo_style custom step temp etotal pe ke press vol c_stream c_allCorrected
+
+restart 5000 restart.hard
+
+timestep 0.005
+run	20000
+WARNING: Using compute temp/deform with no fix deform defined (compute_temp_deform.cpp:81)
+WARNING: Using compute temp/deform with no fix deform defined (compute_temp_deform.cpp:81)
+Memory usage per processor = 6.70611 Mbytes
+Step Temp TotEng PotEng KinEng Press Volume stream allCorre 
+   20049    4.5547573    217.79334    211.10088    6.6924567    195.61781    5390.6732     4.569381    4.5547573 
+   20500    2.3266174    220.12421    216.70563    3.4185764    195.89392    5390.6732     2.311773    2.3266174 
+   21000    2.2455496    220.12476     216.8253    3.2994609    196.14688    5390.6732    2.2396013    2.2455496 
+   21500    2.3543933    220.12435    216.66496    3.4593886    196.36188    5390.6732    2.3485571    2.3543933 
+   22000     2.329203    220.12466    216.70229    3.4223757    195.79719    5390.6732    2.3157757     2.329203 
+   22500    2.3294237    220.12477    216.70207    3.4226999    195.73923    5390.6732    2.3258417    2.3294237 
+   23000    2.3402075     220.1248    216.68626    3.4385448    196.18382    5390.6732    2.3333066    2.3402075 
+   23500    2.3079548    220.12503    216.73387    3.3911549    196.10587    5390.6732     2.305549    2.3079548 
+   24000    2.3378867    220.12483    216.68969    3.4351348    195.74454    5390.6732    2.3316705    2.3378867 
+   24500    2.3034604    220.12515     216.7406    3.3845511    196.14425    5390.6732    2.3053535    2.3034604 
+   25000     2.283091    220.12539    216.77077    3.3546217    195.66253    5390.6732    2.2840968     2.283091 
+   25500    2.3210567    220.12532    216.71491     3.410406     195.8709    5390.6732    2.3232119    2.3210567 
+   26000    2.3953516    220.12482    216.60525    3.5195699    195.80522    5390.6732    2.3895092    2.3953516 
+   26500    2.3378294    220.12517    216.69012    3.4350507    196.05289    5390.6732    2.3296748    2.3378294 
+   27000    2.3415227    220.12509    216.68462    3.4404773    195.57243    5390.6732    2.3392921    2.3415227 
+   27500    2.3352576    220.12529    216.69401    3.4312718    196.08152    5390.6732    2.3340713    2.3352576 
+   28000    2.3144238    220.12547    216.72481      3.40066    196.24696    5390.6732    2.3111635    2.3144238 
+   28500    2.3190049    220.12522    216.71783    3.4073912    195.73914    5390.6732     2.313494    2.3190049 
+   29000    2.3488539    220.12544    216.67419    3.4512493    196.36598    5390.6732    2.3457189    2.3488539 
+   29500    2.3533078    220.12542    216.66763    3.4577936    196.20956    5390.6732    2.3521998    2.3533078 
+   30000    2.3176787    220.12551    216.72007    3.4054426      195.792    5390.6732    2.3182377    2.3176787 
+   30500    2.3299263    220.12533    216.70189    3.4234383     195.8431    5390.6732    2.3299033    2.3299263 
+   31000    2.3266026    220.12543    216.70688    3.4185547    195.53373    5390.6732    2.3295361    2.3266026 
+   31500    2.3092517    220.12528    216.73222    3.3930605    196.00339    5390.6732    2.3064796    2.3092517 
+   32000    2.3402458    220.12532    216.68671    3.4386011    196.01236    5390.6732    2.3413505    2.3402458 
+   32500    2.2960669     220.1254    216.75171    3.3736877    195.81045    5390.6732    2.2922143    2.2960669 
+   33000    2.3250167    220.12539    216.70917    3.4162246     195.8194    5390.6732    2.3208287    2.3250167 
+   33500    2.3247672    220.12573    216.70987     3.415858    195.52761    5390.6732    2.3222324    2.3247672 
+   34000      2.31417    220.12565    216.72537    3.4002871    196.11217    5390.6732     2.313177      2.31417 
+   34500     2.332751    220.12558    216.69799    3.4275888    196.11211    5390.6732    2.3335739     2.332751 
+   35000    2.3061087    220.12562    216.73717    3.3884424    195.85819    5390.6732    2.3025661    2.3061087 
+   35500    2.3170613    220.12542    216.72088    3.4045353    196.04666    5390.6732    2.3176398    2.3170613 
+   36000    2.3338412    220.12528    216.69609    3.4291907    195.95929    5390.6732    2.3335925    2.3338412 
+   36500    2.3314388    220.12521    216.69955    3.4256608    195.91478    5390.6732    2.3308186    2.3314388 
+   37000    2.3301962    220.12535    216.70152     3.423835    195.96831    5390.6732    2.3295469    2.3301962 
+   37500    2.3289467    220.12521    216.70321     3.421999    195.66588    5390.6732    2.3239865    2.3289467 
+   38000    2.3436011    220.12532    216.68179    3.4435312    195.75481    5390.6732    2.3452921    2.3436011 
+   38500     2.343114    220.12537    216.68255    3.4428155    196.07815    5390.6732    2.3454619     2.343114 
+   39000    2.3306893    220.12545    216.70089    3.4245595    195.77824    5390.6732    2.3311566    2.3306893 
+   39500    2.3214244    220.12556    216.71461    3.4109463    196.22094    5390.6732    2.3213338    2.3214244 
+   40000    2.3305971    220.12548    216.70105    3.4244239     196.0588    5390.6732    2.3318295    2.3305971 
+   40049    2.3455836    220.12547    216.67902    3.4464442    195.99534    5390.6732    2.3449815    2.3455836 
+Loop time of 584.685 on 1 procs for 20000 steps with 4125 atoms
+
+Pair  time (%) = 392.01 (67.0463)
+Bond  time (%) = 0.00510883 (0.000873775)
+Neigh time (%) = 180.815 (30.9252)
+Comm  time (%) = 7.26723 (1.24293)
+Outpt time (%) = 0.0333903 (0.00571081)
+Other time (%) = 4.5545 (0.778967)
+
+Nlocal:    4125 ave 4125 max 4125 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:    4704 ave 4704 max 4704 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:    150852 ave 150852 max 150852 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 150852
+Ave neighs/atom = 36.5702
+Ave special neighs/atom = 0
+Neighbor list builds = 20000
+Dangerous builds = 0
